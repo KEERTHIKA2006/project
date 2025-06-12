@@ -1,0 +1,39 @@
+package com.example.internship;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class InternshipApplication {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String studentName;
+    private String email;
+    private String internshipTitle;
+    private String status = "PENDING";
+}
+@RestController
+@RequestMapping("/applications")
+@RequiredArgsConstructor
+public class ApplicationController {
+
+    private final ApplicationRepository repository;
+
+    @PostMapping
+    public ResponseEntity<InternshipApplication> apply(@RequestBody InternshipApplication app) {
+        InternshipApplication saved = repository.save(app);
+        return ResponseEntity.ok(saved);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<InternshipApplication> getById(@PathVariable Long id) {
+        return repository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+}
